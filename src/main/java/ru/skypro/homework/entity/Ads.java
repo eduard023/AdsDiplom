@@ -38,7 +38,6 @@ public class Ads {
     @Column(name = "description")
     private String description;
 
-
     @Column(name = "image")
     private String image;
 
