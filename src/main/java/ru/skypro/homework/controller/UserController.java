@@ -3,24 +3,26 @@ package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
-import ru.skypro.homework.entity.User;
+import ru.skypro.homework.dto.UpdateUser;
+import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.service.UserService;
 @RestController
 
 @RequestMapping("/users")
 @CrossOrigin("http://localhost:3000")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
 
     @PostMapping("/set_password")
@@ -31,9 +33,10 @@ public class UserController {
     description = "ошибка авторизации")
     @ApiResponse(responseCode = "403",
     description = "операция запрещена")
-    public ResponseEntity<?> setPassword(@RequestBody NewPassword newPassword){
-        userService.updatePassword(newPassword);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword,
+                                                   Authentication authentication){
+        userService.updatePassword(newPassword, authentication.getName());
+        return ResponseEntity.ok(newPassword);
     }
 
 
@@ -44,8 +47,8 @@ public class UserController {
             description = "Операция успешна")
     @ApiResponse(responseCode = "401",
             description = "Ошибка авторизации")
-    public ResponseEntity<?> getUser(){
-        ru.skypro.homework.entity.User user = userService.getUser();
+    public ResponseEntity<UserDto> getUser(Authentication authentication){
+        UserDto user = userService.getUser(authentication.getName());
         return ResponseEntity.ok().body(user);
     }
 
@@ -57,9 +60,10 @@ public class UserController {
             description = "Операция успешна")
     @ApiResponse(responseCode = "401",
             description = "Ошибка авторизации")
-    public ResponseEntity<?>updateUser(@RequestBody User user){
-        userService.updateUser(user);
-        return ResponseEntity.ok().body(user);
+    public ResponseEntity<UpdateUser> updateUser(@RequestBody UpdateUser updateUser,
+                                              Authentication authentication){
+        userService.updateUser(updateUser, authentication.getName());
+        return ResponseEntity.ok().body(updateUser);
     }
 
 
@@ -70,9 +74,10 @@ public class UserController {
             description = "Операция успешна")
     @ApiResponse(responseCode = "401",
             description = "Ошибка авторизации")
-    public ResponseEntity<?>updateUserImage(@RequestParam("image")MultipartFile file){
-        userService.updateUserImage(file);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?>updateUserImage(@RequestParam MultipartFile image,
+                                            Authentication authentication){
+        userService.updateUserImage(image, authentication.getName());
+        return ResponseEntity.ok(HttpStatus.NO_CONTENT);
     }
 
 }

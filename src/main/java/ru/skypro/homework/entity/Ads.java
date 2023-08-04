@@ -5,19 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 
 
-@Entity
+@Entity(name = "ads")
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Table(name = "ads")
 public class Ads {
 
     @Id
@@ -46,20 +43,6 @@ public class Ads {
     @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Ads ads = (Ads) o;
-        return getId() != null && Objects.equals(getId(), ads.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 
 
 }
