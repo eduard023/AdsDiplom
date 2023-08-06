@@ -1,47 +1,54 @@
 package ru.skypro.homework.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.CommentDto;
-import ru.skypro.homework.dto.ResponseWrapperComment;
+import ru.skypro.homework.dto.CommentsDto;
+import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.service.CommentService;
 
 @RestController
 @RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
+@RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
+
+
+    @PostMapping("/{id}/comments")
+    @Operation(summary = "Добавление комментария к объявлению")
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id,
+                                                 @RequestBody CreateOrUpdateCommentDTO commentDto,
+                                                 Authentication authentication){
+
+        return ResponseEntity.ok(commentService.addComment(id, commentDto, authentication.getName()));
     }
 
-
-    @PostMapping("/{ad_pk}/comments")
-    public ResponseEntity<CommentDto> addComment(@PathVariable(name = "ad_pk") Integer adPk,
-                                                 @RequestBody CommentDto commentDto){
-
-        return ResponseEntity.ok(commentService.addComment(adPk, commentDto));
+    @GetMapping("/{id}comments")
+    @Operation(summary = "Получение комментариев объявления")
+    public ResponseEntity<CommentsDto> getComments(@PathVariable Integer id){
+        return ResponseEntity.ok(commentService.getCommentsByAdId(id));
     }
 
-    @GetMapping("/{ad_pk}comments")
-    public ResponseEntity<ResponseWrapperComment> getComment(@PathVariable Integer adPk){
-        return ResponseEntity.ok(commentService.getCommentsByAdId(adPk));
-    }
-
-    @DeleteMapping("/{ad_pk}/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable(name = "ad_pk") Integer adPk,
-                                           @PathVariable Integer id){
-        commentService.deleteComment(adPk, id);
+    @DeleteMapping("/{adId}/comments/{commentId}")
+    @Operation(summary = "Удаление комментария")
+    public ResponseEntity<?> deleteComment(@PathVariable Integer adId,
+                                           @PathVariable Integer commentId){
+        commentService.deleteComment(adId, commentId);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{ad_pk}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable(name = "ad_pk") Integer adPk,
+    @PatchMapping("/{adId}/comments/{commentId}")
+    @Operation(summary = "Обновление комментария")
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId,
                                                     @PathVariable Integer commentId,
-                                                    @RequestBody CommentDto commentDto){
-        return ResponseEntity.ok(commentService.updateComment(adPk, commentId, commentDto));
+                                                    @RequestBody CreateOrUpdateCommentDTO commentDTO){
+        return ResponseEntity.ok(commentService.updateComment(adId, commentId, commentDTO));
     }
 }

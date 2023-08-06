@@ -1,22 +1,17 @@
 package ru.skypro.homework.entity;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.Hibernate;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.OffsetDateTime;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "comments")
+@Data
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,22 +28,10 @@ public class Comment {
     private Ads ads;
 
     @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "text")
     private String text;
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Comment comment = (Comment) o;
-        return getId() != null && Objects.equals(getId(), comment.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

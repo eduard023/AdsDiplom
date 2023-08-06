@@ -2,8 +2,11 @@ package ru.skypro.homework.controller;
 
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
@@ -13,38 +16,40 @@ import ru.skypro.homework.service.AdsService;
 @RestController
 @RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
+@RequiredArgsConstructor
 public class AdsController {
 
     private final AdsService adsService;
 
 
-    public AdsController(AdsService adsService) {
-        this.adsService = adsService;
-    }
 
-    //КОНТРОЛЛЕРЫ ДЛЯ ОБЬЯВЛЕНИЙ
 
     @GetMapping
-    public ResponseEntity<ResponseWrapperAds>getAllAds(){
+    @Operation(summary = "Получение всех объявлений")
+    public ResponseEntity<AdsDto>getAllAds(){
         return ResponseEntity.ok(adsService.getAllAds());
     }
 
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto>addAds(@RequestPart MultipartFile image,
-                                        @RequestPart CreateAdsDto createAdsDto){
-        return ResponseEntity.ok(adsService.addAds(createAdsDto, image));
+    @Operation(summary = "Добавление объявления")
+    public ResponseEntity<AdDto>addAds(@RequestPart MultipartFile image,
+                                       @RequestPart CreateOrUpdateAd createOrUpdateAd,
+                                       Authentication authentication){
+        return ResponseEntity.ok(adsService.addAds(createOrUpdateAd, image, authentication.getName()));
 
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<FullAdsDto> getAds(@PathVariable Integer id){
-        return ResponseEntity.ok(adsService.getFullAdsById(id));
+    @Operation(summary = "Получение информации об объявлении")
+    public ResponseEntity<ExtendedAd> getAds(@PathVariable Integer id){
+        return ResponseEntity.ok(adsService.getAdsById(id));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Удаление объявления")
     public ResponseEntity<?> removeAds(@PathVariable Integer id){
         adsService.removeAds(id);
         return ResponseEntity.ok().build();
@@ -52,15 +57,25 @@ public class AdsController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id,
-                                            @RequestBody CreateAdsDto createAdsDto){
-        return ResponseEntity.ok(adsService.updateAds(id, createAdsDto));
+    @Operation(summary = "Обновление информации об объявлении")
+    public ResponseEntity<AdDto> updateAds(@PathVariable Integer id,
+                                           @RequestBody CreateOrUpdateAd createOrUpdateAd){
+        return ResponseEntity.ok(adsService.updateAds(id, createOrUpdateAd));
 
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAds> getAdsMe(){
-        return ResponseEntity.ok(adsService.getMyAds());
+    @Operation(summary = "Получение объявлений авторизованного пользователя")
+    public ResponseEntity<AdsDto> getAdsMe(Authentication authentication){
+        return ResponseEntity.ok(adsService.getMyAds(authentication.getName()));
+    }
+
+
+    @PatchMapping("{id}/image")
+    @Operation(summary = "Обновление картинки объявления")
+    public ResponseEntity<String> updateImage(@PathVariable Integer id,
+                                              @RequestBody MultipartFile image) {
+        return ResponseEntity.ok(adsService.updateImage(id, image));
     }
 
 
