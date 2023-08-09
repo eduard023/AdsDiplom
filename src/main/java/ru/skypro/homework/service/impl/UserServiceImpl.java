@@ -15,8 +15,10 @@ import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.UsernameNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
+import java.io.IOException;
 import java.util.Optional;
 
 
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
+    private final ImageService imageService;
 
     private User find(String username){
         return userRepository.findByUsername(username)
@@ -68,7 +71,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateUserImage(MultipartFile file, String username) {
+    public void updateUserImage(MultipartFile image, String username) {
+        User user = find(username);
+        imageService.deleteImage(user.getImage());
+        user.setImage(imageService.saveImage(image, "/users"));
+        userRepository.save(user);
+        log.trace("Фото профиля обновлено");
+    }
+
+    @Override
+    public byte[] getImage(String name) throws IOException {
+        return imageService.getImage(name);
     }
 
     @Override

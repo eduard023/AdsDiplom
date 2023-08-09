@@ -5,6 +5,7 @@ import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.entity.Ads;
 
 public interface AdsService {
 
@@ -19,7 +20,7 @@ public interface AdsService {
 
     AdDto updateAds(Integer id, CreateOrUpdateAd createOrUpdateAd);
 
-    String updateImage(Integer id, MultipartFile image);
+    Ads updateImage(Integer id, MultipartFile image);
 
     AdsDto getMyAds(String username);
 

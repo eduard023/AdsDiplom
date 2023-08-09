@@ -14,6 +14,9 @@ import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.service.UserService;
+
+import java.io.IOException;
+
 @RestController
 
 @RequestMapping("/users")
@@ -78,6 +81,12 @@ public class UserController {
                                             Authentication authentication){
         userService.updateUserImage(image, authentication.getName());
         return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+    }
+
+
+    @GetMapping(value = "/image/{name}", produces = {MediaType.IMAGE_PNG_VALUE})
+    public byte[] getImages(@PathVariable String name) throws IOException{
+        return userService.getImage(name);
     }
 
 }

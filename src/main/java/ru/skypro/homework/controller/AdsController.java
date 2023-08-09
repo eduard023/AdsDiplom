@@ -6,11 +6,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
+
 
 
 @RestController
@@ -23,7 +25,6 @@ public class AdsController {
 
 
 
-
     @GetMapping
     @Operation(summary = "Получение всех объявлений")
     public ResponseEntity<AdsDto>getAllAds(){
@@ -32,11 +33,12 @@ public class AdsController {
 
 
 
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Добавление объявления")
-    public ResponseEntity<AdDto>addAds(@RequestPart MultipartFile image,
-                                       @RequestPart CreateOrUpdateAd createOrUpdateAd,
-                                       Authentication authentication){
+    public ResponseEntity<AdDto>addAd(@RequestPart("image") MultipartFile image,
+                                      @RequestPart("properties") CreateOrUpdateAd createOrUpdateAd,
+                                       Authentication authentication)  {
         return ResponseEntity.ok(adsService.addAds(createOrUpdateAd, image, authentication.getName()));
 
     }
@@ -48,14 +50,16 @@ public class AdsController {
         return ResponseEntity.ok(adsService.getAdsById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @adsServiceImpl.getAdsById(#id).getusername() == authentication.principal.username")
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление объявления")
-    public ResponseEntity<?> removeAds(@PathVariable Integer id){
+    public ResponseEntity<?> removeAd(@PathVariable Integer id){
         adsService.removeAds(id);
         return ResponseEntity.ok().build();
 
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @adsServiceImpl.getAdsById(#id).getusername() == authentication.principal.username")
     @PatchMapping("/{id}")
     @Operation(summary = "Обновление информации об объявлении")
     public ResponseEntity<AdDto> updateAds(@PathVariable Integer id,
@@ -73,8 +77,8 @@ public class AdsController {
 
     @PatchMapping("{id}/image")
     @Operation(summary = "Обновление картинки объявления")
-    public ResponseEntity<String> updateImage(@PathVariable Integer id,
-                                              @RequestBody MultipartFile image) {
+    public ResponseEntity<?> updateImage(@PathVariable Integer id,
+                                              @RequestParam MultipartFile image) {
         return ResponseEntity.ok(adsService.updateImage(id, image));
     }
 
