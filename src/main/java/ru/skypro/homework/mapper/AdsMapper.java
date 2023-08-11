@@ -26,8 +26,7 @@ public interface AdsMapper {
     @Mapping(source = "author.phone", target = "phone")
     ExtendedAd toExtendedAd(Ads ads);
 
-    @Mapping(source = "id", target = "pk")
-    @Mapping(source = "author.id", target = "author")
+
     List<AdDto> toAdDtoList(List<Ads> ads);
 
     void update(CreateOrUpdateAd createOrUpdateAd, @MappingTarget Ads ads);

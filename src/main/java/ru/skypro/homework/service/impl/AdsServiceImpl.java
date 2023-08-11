@@ -15,6 +15,7 @@ import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.ImageService;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -27,6 +28,7 @@ public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final AdsMapper adsMapper;
     private final UserRepository userRepository;
+    private final ImageService imageService;
 
     private Ads find(Integer id){
         return adsRepository.findById(id)
@@ -47,6 +49,7 @@ public class AdsServiceImpl implements AdsService {
         Ads ads = adsMapper.toAds(createOrUpdateAd);
         ads.setAuthor(userRepository.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException(username)));
+        ads.setImage(imageService.saveImage(image, "/ads"));
         adsRepository.save(ads);
         return adsMapper.toAdDto(ads);
     }
@@ -61,6 +64,7 @@ public class AdsServiceImpl implements AdsService {
     @Transactional
     public void removeAds(Integer id) {
         Ads ads = find(id);
+        imageService.deleteImage(ads.getImage());
         adsRepository.delete(ads);
 
     }
@@ -74,8 +78,11 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public String updateImage(Integer id, MultipartFile image) {
-        return null;
+    public Ads updateImage(Integer id, MultipartFile image) {
+        Ads ads = find(id);
+        imageService.deleteImage(ads.getImage());
+        ads.setImage(imageService.saveImage(image, "/ads"));
+        return adsRepository.save(ads);
     }
 
     @Override
