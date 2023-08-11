@@ -7,6 +7,8 @@ import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.entity.Ads;
 
+import java.io.IOException;
+
 public interface AdsService {
 
 
@@ -23,5 +25,7 @@ public interface AdsService {
     Ads updateImage(Integer id, MultipartFile image);
 
     AdsDto getMyAds(String username);
+
+    byte[] getImage(String name) throws IOException;
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
 
+import java.io.IOException;
 
 
 @RestController
@@ -50,7 +51,7 @@ public class AdsController {
         return ResponseEntity.ok(adsService.getAdsById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @adsServiceImpl.getAdsById(#id).getusername() == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @adsServiceImpl.getAdsById(#id).getEmail() == authentication.principal.username")
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление объявления")
     public ResponseEntity<?> removeAd(@PathVariable Integer id){
@@ -59,7 +60,7 @@ public class AdsController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @adsServiceImpl.getAdsById(#id).getusername() == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @adsServiceImpl.getAdsById(#id).getEmail() == authentication.principal.username")
     @PatchMapping("/{id}")
     @Operation(summary = "Обновление информации об объявлении")
     public ResponseEntity<AdDto> updateAds(@PathVariable Integer id,
@@ -80,6 +81,12 @@ public class AdsController {
     public ResponseEntity<?> updateImage(@PathVariable Integer id,
                                               @RequestParam MultipartFile image) {
         return ResponseEntity.ok(adsService.updateImage(id, image));
+    }
+
+
+    @GetMapping(value = "/image/{name}", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] getImages(@PathVariable String name) throws IOException{
+        return adsService.getImage(name);
     }
 
 

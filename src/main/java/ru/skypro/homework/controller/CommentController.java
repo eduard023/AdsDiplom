@@ -31,13 +31,13 @@ public class CommentController {
         return ResponseEntity.ok(commentService.addComment(id, commentDto, authentication.getName()));
     }
 
-    @GetMapping("/{id}comments")
+    @GetMapping("/{id}/comments")
     @Operation(summary = "Получение комментариев объявления")
     public ResponseEntity<CommentsDto> getComments(@PathVariable Integer id){
         return ResponseEntity.ok(commentService.getCommentsByAdId(id));
     }
 
-    @PreAuthorize("hasRole ('ADMIN') or @adsServiceImpl.getAdsById(#id) == authentication.principal.username")
+    @PreAuthorize("hasRole ('ADMIN') or @commentServiceImpl.getCommentOfUSer(#commentId) == authentication.principal.username")
     @DeleteMapping("/{adId}/comments/{commentId}")
     @Operation(summary = "Удаление комментария")
     public ResponseEntity<?> deleteComment(@PathVariable Integer adId,
@@ -46,7 +46,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole ('ADMIN') or @adsServiceImpl.getAdsById(#id) == authentication.principal.username")
+    @PreAuthorize("hasRole ('ADMIN') or @commentServiceImpl.getCommentOfUSer(#commentId) == authentication.principal.username")
     @PatchMapping("/{adId}/comments/{commentId}")
     @Operation(summary = "Обновление комментария")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId,
