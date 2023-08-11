@@ -18,6 +18,7 @@ import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.ImageService;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class AdsServiceImpl implements AdsService {
         List<AdDto> adDtoList = adsMapper.toAdDtoList(adsList);
         AdsDto adsDto = new AdsDto();
         adsDto.setCount(adsList.size());
-        adsDto.setResult(adDtoList);
+        adsDto.setResults(adDtoList);
         return adsDto;
     }
 
@@ -91,8 +92,13 @@ public class AdsServiceImpl implements AdsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username)));
         List<AdDto> adDtoList = adsMapper.toAdDtoList(adsList);
         AdsDto adsDto = new AdsDto();
-        adsDto.setResult(adDtoList);
+        adsDto.setResults(adDtoList);
         adsDto.setCount(adsList.size());
         return adsDto;
+    }
+
+    @Override
+    public byte[] getImage(String name)throws IOException {
+        return imageService.getImage(name);
     }
 }

@@ -82,4 +82,8 @@ public class CommentServiceImpl implements CommentService {
         log.trace("Обновлен комментарий с id: ", id);
         return commentMapper.toCommentDto(comment);
     }
+
+    public String getCommentOfUSer(Integer id){
+        return find(id).getAuthor().getUsername();
+    }
 }
