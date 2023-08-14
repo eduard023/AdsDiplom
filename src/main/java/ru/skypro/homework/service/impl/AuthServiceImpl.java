@@ -1,46 +1,46 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManager manager;
     private final PasswordEncoder encoder;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder) {
-        this.manager = manager;
-        this.encoder = passwordEncoder;
-    }
 
+    // проверка аутентификации пользователя
     @Override
-    public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+    public boolean login(String username, String password) {
+        Optional<ru.skypro.homework.entity.User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        return encoder.matches(password, optionalUser.get().getPassword());
     }
 
+    // регистрация нового пользователя
     @Override
-    public boolean register(Register register) {
-        if (manager.userExists(register.getUsername())) {
+    public boolean register(Register register, Role role) {
+        if (userRepository.findByUsername(register.getUsername()).isPresent()) {
             return false;
         }
-        manager.createUser(
-                User.builder()
-                        .passwordEncoder(this.encoder::encode)
-                        .password(register.getPassword())
-                        .username(register.getUsername())
-                        .roles(register.getRole().name())
-                        .build());
+        ru.skypro.homework.entity.User user = userMapper.toUserReg(register);
+        user.setUsername(user.getUsername());
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setRole(role);
+        userRepository.save(user);
         return true;
     }
 
