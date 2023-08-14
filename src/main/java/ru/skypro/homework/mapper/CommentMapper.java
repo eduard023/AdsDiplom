@@ -23,6 +23,4 @@ public interface CommentMapper {
     @Mapping(source = "author.firstName", target = "authorFirstName")
     CommentDto toCommentDto(Comment comment);
 
-
-//    void update(CreateOrUpdateCommentDTO orUpdateCommentDTO, @MappingTarget Comment comment);
 }
