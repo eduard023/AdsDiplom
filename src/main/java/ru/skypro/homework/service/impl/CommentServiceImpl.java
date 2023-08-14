@@ -32,12 +32,13 @@ public class CommentServiceImpl implements CommentService {
 
 
 
-
+// метод поиска комментария
     private Comment find(Integer id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден"));
     }
 
+    // создание комментария
     @Override
     public CommentDto addComment(Integer adId, CreateOrUpdateCommentDTO commentDto, String username) {
         Ads ads = adsRepository.findById(adId)
@@ -52,6 +53,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toCommentDto(comment);
     }
 
+    //получает все комментарии к обьявлению
     @Override
     public CommentsDto getCommentsByAdId(Integer adId) {
         List<Comment> commentList = commentRepository.findAllByAdsId(adId);
@@ -63,6 +65,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
+    // удаление комментария
     @Override
     @Transactional
     public void deleteComment(Integer adId, Integer id) {
@@ -74,6 +77,7 @@ public class CommentServiceImpl implements CommentService {
        log.trace("Удален комментарий с id: ", id);
     }
 
+    // изменение комментария
     @Override
     public CommentDto updateComment(Integer adId, Integer id, CreateOrUpdateCommentDTO commentDTO) {
         Comment comment = find(id);
@@ -83,6 +87,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toCommentDto(comment);
     }
 
+    //метод для для проверки создателя комментария
     public String getCommentOfUSer(Integer id){
         return find(id).getAuthor().getUsername();
     }

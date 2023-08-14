@@ -24,6 +24,7 @@ public class ImageServiceImpl implements ImageService {
     @Value("${images.dir.path}")
     private String imagesDir;
 
+    //добавление картинок для обьявлений и пользователей
     @Override
     public String saveImage(MultipartFile image, String name) {
         String fileName = UUID.randomUUID() + "." + StringUtils.getFilenameExtension(image.getOriginalFilename());
@@ -38,6 +39,7 @@ public class ImageServiceImpl implements ImageService {
         return name + "/image/" + fileName;
     }
 
+    // получение картинок
     @Override
     public byte[] getImage(String name) throws IOException {
         String path = imagesDir + "/" + name;
@@ -48,6 +50,7 @@ public class ImageServiceImpl implements ImageService {
         return null;
     }
 
+    // удаление картинок
     @Override
     public void deleteImage(String path) {
         if (path == null){

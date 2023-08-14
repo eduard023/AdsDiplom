@@ -24,5 +24,5 @@ public interface CommentMapper {
     CommentDto toCommentDto(Comment comment);
 
 
-    void update(CreateOrUpdateCommentDTO orUpdateCommentDTO, @MappingTarget Comment comment);
+//    void update(CreateOrUpdateCommentDTO orUpdateCommentDTO, @MappingTarget Comment comment);
 }
