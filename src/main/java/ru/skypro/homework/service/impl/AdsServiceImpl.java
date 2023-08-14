@@ -31,10 +31,13 @@ public class AdsServiceImpl implements AdsService {
     private final UserRepository userRepository;
     private final ImageService imageService;
 
+
+    // метод для поиска обьявлений
     private Ads find(Integer id){
         return adsRepository.findById(id)
                 .orElseThrow(()-> new AdsNotFoundException("Не найдено обьявление с id: " + id));
     }
+    // получить все обьявления
     @Override
     public AdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
@@ -45,6 +48,7 @@ public class AdsServiceImpl implements AdsService {
         return adsDto;
     }
 
+    // создание обьявления
     @Override
     public AdDto addAds(CreateOrUpdateAd createOrUpdateAd, MultipartFile image, String username) {
         Ads ads = adsMapper.toAds(createOrUpdateAd);
@@ -55,12 +59,14 @@ public class AdsServiceImpl implements AdsService {
         return adsMapper.toAdDto(ads);
     }
 
+    // поиск обьявления по id
     @Override
     public ExtendedAd getAdsById(Integer id) {
         Ads ads = find(id);
         return adsMapper.toExtendedAd(ads);
     }
 
+    //удаление обьявления
     @Override
     @Transactional
     public void removeAds(Integer id) {
@@ -70,6 +76,7 @@ public class AdsServiceImpl implements AdsService {
 
     }
 
+    //обновление обьявления по его id
     @Override
     public AdDto updateAds(Integer id, CreateOrUpdateAd createOrUpdateAd) {
         Ads ads = find(id);
@@ -78,6 +85,7 @@ public class AdsServiceImpl implements AdsService {
         return adsMapper.toAdDto(ads);
     }
 
+    //обновление картинки обьявления
     @Override
     public Ads updateImage(Integer id, MultipartFile image) {
         Ads ads = find(id);
@@ -86,6 +94,7 @@ public class AdsServiceImpl implements AdsService {
         return adsRepository.save(ads);
     }
 
+    // получения списка обьявления которые принадлежат пользователю
     @Override
     public AdsDto getMyAds(String username) {
         List<Ads> adsList = adsRepository.findByAuthor(userRepository.findByUsername(username)
@@ -97,6 +106,7 @@ public class AdsServiceImpl implements AdsService {
         return adsDto;
     }
 
+    // получение картинки обьявления
     @Override
     public byte[] getImage(String name)throws IOException {
         return imageService.getImage(name);

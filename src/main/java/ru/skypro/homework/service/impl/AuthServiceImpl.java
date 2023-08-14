@@ -20,6 +20,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
 
 
+    // проверка аутентификации пользователя
     @Override
     public boolean login(String username, String password) {
         Optional<ru.skypro.homework.entity.User> optionalUser = userRepository.findByUsername(username);
@@ -29,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
         return encoder.matches(password, optionalUser.get().getPassword());
     }
 
+    // регистрация нового пользователя
     @Override
     public boolean register(Register register, Role role) {
         if (userRepository.findByUsername(register.getUsername()).isPresent()) {

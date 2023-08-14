@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder encoder;
     private final ImageService imageService;
 
+    // метод для поиска пользователей
     private User find(String username){
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
@@ -39,12 +40,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
 
+    // получение информации о пользователе
     @Override
     public UserDto getUser(String username) {
         User user = find(username);
        return userMapper.toUserDto(user);
     }
 
+    //обновление пароля
     @Override
     public boolean updatePassword(NewPassword newPassword, String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -61,6 +64,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return false;
     }
 
+    //изменение информации о пользователе
     @Override
     public UserDto updateUser(UpdateUser updateUser, String username) {
         User user = find(username);
@@ -70,6 +74,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userMapper.toUserDto(user);
     }
 
+    //изменение картинки профиля пользователя
     @Override
     public void updateUserImage(MultipartFile image, String username) {
         User user = find(username);
@@ -79,6 +84,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.trace("Фото профиля обновлено");
     }
 
+    //получение картинки по его имени
     @Override
     public byte[] getImage(String name) throws IOException {
         return imageService.getImage(name);
